@@ -10,12 +10,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 const INVOICE_KEYWORDS_FILENAME = ['发票', 'invoice', 'fapiao']
 const INVOICE_KEYWORDS_CONTENT = [
   '发票代码',
+  '发票号码',
   '统一社会信用代码',
   '纳税人识别号',
   '增值税',
   '专用发票',
   '普通发票',
   '电子发票',
+  '铁路电子客票',
+  '铁路客票',
+  '全国增值税发票',
 ]
 
 export async function detectInvoice(entry: FileEntry): Promise<boolean> {

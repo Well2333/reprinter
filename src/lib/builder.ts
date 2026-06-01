@@ -1,6 +1,6 @@
 import { PDFDocument, rgb } from 'pdf-lib'
 import type { FileEntry, ProcessedPage, EmbeddedPageData, RasterPageData } from '../types'
-import { processPdf } from './processors/pdfProcessor'
+import { processPdf, processPdfRaster } from './processors/pdfProcessor'
 import { processImage } from './processors/imageProcessor'
 import { processOfd } from './processors/ofdProcessor'
 
@@ -60,6 +60,10 @@ async function getProcessedPages(
   const { ext } = entry
 
   if (ext === 'pdf') {
+    // Invoice PDFs are rasterized to avoid editable elements and CropBox cropping issues
+    if (entry.isInvoice) {
+      return processPdfRaster(entry.file)
+    }
     return processPdf(entry.file, outputDoc)
   }
 
