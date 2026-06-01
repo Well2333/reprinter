@@ -9,6 +9,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 
 const PREVIEW_SCALE = 1.5
 
+// CJK fonts require cMaps for proper rendering
+const CMAP_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/'
+const CMAP_PACKED = true
+
 /**
  * Generate a preview Data URL for the first page of any supported file.
  */
@@ -33,7 +37,11 @@ export async function generatePreview(entry: FileEntry): Promise<string> {
 
 async function renderPdfPreview(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer()
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+  const pdf = await pdfjsLib.getDocument({
+    data: arrayBuffer,
+    cMapUrl: CMAP_URL,
+    cMapPacked: CMAP_PACKED,
+  }).promise
   const page = await pdf.getPage(1)
   const viewport = page.getViewport({ scale: PREVIEW_SCALE })
 

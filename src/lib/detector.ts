@@ -7,6 +7,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString()
 
+// CJK fonts require cMaps for proper text extraction
+const CMAP_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/'
+const CMAP_PACKED = true
+
 const INVOICE_KEYWORDS_FILENAME = ['发票', 'invoice', 'fapiao']
 const INVOICE_KEYWORDS_CONTENT = [
   '发票代码',
@@ -38,7 +42,11 @@ export async function detectInvoice(entry: FileEntry): Promise<boolean> {
   if (ext === 'pdf') {
     try {
       const arrayBuffer = await file.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+      const pdf = await pdfjsLib.getDocument({
+        data: arrayBuffer,
+        cMapUrl: CMAP_URL,
+        cMapPacked: CMAP_PACKED,
+      }).promise
       const page = await pdf.getPage(1)
       const textContent = await page.getTextContent()
       const text = textContent.items

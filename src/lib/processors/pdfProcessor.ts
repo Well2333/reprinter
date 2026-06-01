@@ -9,6 +9,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 
 const PDF_RASTER_SCALE = 2 // 2× DPI for clarity
 
+// CJK fonts require cMaps to render/extract correctly
+const CMAP_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/'
+const CMAP_PACKED = true
+
 /**
  * Embed all pages of a PDF file into the target PDFDocument (vector mode).
  * Used for non-invoice files only.
@@ -62,7 +66,11 @@ export async function processPdf(
  */
 export async function processPdfRaster(file: File): Promise<RasterPageData[]> {
   const arrayBuffer = await file.arrayBuffer()
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+  const pdf = await pdfjsLib.getDocument({
+    data: arrayBuffer,
+    cMapUrl: CMAP_URL,
+    cMapPacked: CMAP_PACKED,
+  }).promise
   const results: RasterPageData[] = []
 
   for (let i = 1; i <= pdf.numPages; i++) {
@@ -73,7 +81,7 @@ export async function processPdfRaster(file: File): Promise<RasterPageData[]> {
     canvas.height = viewport.height
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('无法获取Canvas上下文')
-    await page.render({ canvasContext: ctx as object, viewport }).promise
+    await page.render({ canvasContext: ctx, viewport }).promise
     results.push({
       type: 'raster' as const,
       imageBytes: canvasToBytes(canvas),
