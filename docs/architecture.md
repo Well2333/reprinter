@@ -21,7 +21,7 @@
 ## 目录结构
 
 ```
-reprinter/
+pdfprinter/
 ├── docs/                        # 仓库级知识（守则、架构、更新记录）
 │   ├── REPO-RULES.md
 │   ├── README.md
